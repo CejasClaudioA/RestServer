@@ -1,33 +1,57 @@
-const getUsuarios = (req, res) => {
-    const params = req.query;
+const Usuario = require('../models/usuario');
+const bcryptjs = require('bcryptjs');
+
+
+const getUsuarios = async (req, res) => {
+    const { limite = 5, desde = 0 } = req.query;
+    const query = { estado: true };
+
+
+    const [total, usuarios] = await Promise.all([
+        Usuario.countDocuments(query),
+        Usuario.find(query).skip(Number(desde)).limit(Number(limite))
+    ]);
+
     res.status(403).json({
-        "msg": "get API - Controlador",
-        params
+        total, usuarios
     });
 }
 
-const putUsuarios = (req, res) => {
-    const id = req.params.id;
-    console.log(id);
-    res.status(500).json({
-        "ok": true,
-        "msg": "put API - Controlador"
-    });
-}
+const postUsuarios = async (req, res) => {
 
-const postUsuarios = (req, res) => {
-    const { nombre, edad } = req.body;
+    const { nombre, email, password, rol } = req.body;
+    const usuario = new Usuario({ nombre, email, password, rol });
+
+    const salt = bcryptjs.genSaltSync();
+    usuario.password = bcryptjs.hashSync(password, salt);
+    await usuario.save();
+
     res.status(201).json({
-        "msg": "post API - Controlador",
-        nombre,
-        edad
+        usuario
     });
 }
 
-const deleteUsuarios = (req, res) => {
+const putUsuarios = async (req, res) => {
+    const { id } = req.params;
+    const { _id, password, google, correo, ...resto } = req.body;
+
+    if (password) {
+        const salt = bcryptjs.genSaltSync();
+        resto.password = bcryptjs.hashSync(password, salt);
+    }
+
+    const user = await Usuario.findByIdAndUpdate(id, resto);
+    res.status(500).json({
+        user
+    });
+}
+
+const deleteUsuarios = async (req, res) => {
+    const { id } = req.params;
+    const query = { estado: false };
+    const usuario = await Usuario.findByIdAndUpdate(id, query);
     res.status(200).json({
-        "ok": true,
-        "msg": "delete API - Controlador"
+        usuario
     });
 }
 
