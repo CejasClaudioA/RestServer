@@ -48,11 +48,9 @@ const putUsuarios = async (req, res) => {
 
 const deleteUsuarios = async (req, res) => {
     const { id } = req.params;
-    const query = { estado: false };
-    const usuario = await Usuario.findByIdAndUpdate(id, query);
-    res.status(200).json({
-        usuario
-    });
+    const usuario = await Usuario.findByIdAndUpdate(id, { estado: false });
+
+    res.status(200).json({ usuario });
 }
 
 const patchUsuarios = (req, res) => {
