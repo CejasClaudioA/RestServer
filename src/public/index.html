@@ -4,10 +4,6 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <meta
-      name="google-signin-client_id"
-      content="607482429115-t7ev554odgrbovuc1hb0tu0m4k1uvqk9.apps.googleusercontent.com"
-    /> -->
     <title>Google Signin</title>
   </head>
   <body>
@@ -38,9 +34,9 @@
         ? "http://localhost:3000/api/auth/google"
         : "https://restsv-nodejs.herokuapp.com/api/auth/google";
 
+      console.log(url);
       function handleCredentialResponse(response) {
         const body = { id_token: response.credential };
-
         fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -48,7 +44,6 @@
         })
           .then((resp) => resp.json())
           .then((resp) => {
-            console.log("Nuestro server", resp);
             localStorage.setItem("email", resp.usuario.email);
             location.reload();
           })
